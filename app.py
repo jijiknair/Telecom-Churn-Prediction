@@ -8,7 +8,6 @@ from xgboost import XGBClassifier
 from imblearn.over_sampling import SMOTE
 import numpy as np
 
-st.set_option('deprecation.showPyplotGlobalUse', False)
 
 # Title
 st.title("📊 Customer Churn Prediction & Dashboard")

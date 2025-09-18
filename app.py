@@ -94,71 +94,65 @@ if uploaded_file is not None:
     # ---------------------------
     # Model Training Section
     # ---------------------------
-    elif selected == "Model Training":
-        st.subheader("⚙️ Model Training")
-        X = df_encoded.drop('Churn_Yes', axis=1)
-        y = df_encoded['Churn_Yes']
+   elif selected == "Predict Churn":
+    st.subheader("📌 Predict Churn for a New Customer")
 
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    if 'model' not in st.session_state:
+        st.warning("⚠️ Please train the model first in 'Model Training' section.")
+    else:
+        model = st.session_state['model']
+        threshold = st.session_state['threshold']
+        X_columns = st.session_state['X_test'].columns
 
-        sm = SMOTE(random_state=42)
-        X_train_res, y_train_res = sm.fit_resample(X_train, y_train)
+        user_input = {}
 
-        model = XGBClassifier(random_state=42, eval_metric="logloss")
-        model.fit(X_train_res, y_train_res)
+        # Map original categorical columns to one-hot encoding
+        binary_mappings = {
+            "gender_Male": ["Female", "Male"],
+            "Partner_Yes": ["No", "Yes"],
+            "Dependents_Yes": ["No", "Yes"],
+            "PhoneService_Yes": ["No", "Yes"],
+            "MultipleLines_No phone service": ["No phone service", "No"],
+            "MultipleLines_Yes": ["No", "Yes"],
+            "InternetService_Fiber optic": ["DSL", "Fiber optic"],
+            "InternetService_No": ["DSL", "No"],
+            "OnlineSecurity_No internet service": ["No internet service", "No"],
+            "OnlineSecurity_Yes": ["No", "Yes"],
+            "OnlineBackup_No internet service": ["No internet service", "No"],
+            "OnlineBackup_Yes": ["No", "Yes"],
+            "DeviceProtection_No internet service": ["No internet service", "No"],
+            "DeviceProtection_Yes": ["No", "Yes"],
+            "TechSupport_No internet service": ["No internet service", "No"],
+            "TechSupport_Yes": ["No", "Yes"],
+            "StreamingTV_No internet service": ["No internet service", "No"],
+            "StreamingTV_Yes": ["No", "Yes"],
+            "StreamingMovies_No internet service": ["No internet service", "No"],
+            "StreamingMovies_Yes": ["No", "Yes"],
+            "Contract_One year": ["Month-to-month", "One year"],
+            "Contract_Two year": ["Month-to-month", "Two year"],
+            "PaperlessBilling_Yes": ["No", "Yes"],
+            "PaymentMethod_Credit card (automatic)": ["Electronic check", "Credit card (automatic)"],
+            "PaymentMethod_Electronic check": ["Credit card (automatic)", "Electronic check"],
+            "PaymentMethod_Mailed check": ["Credit card (automatic)", "Mailed check"]
+        }
 
-        # Predictions
-        y_probs = model.predict_proba(X_test)[:, 1]
-        threshold = 0.27
-        y_pred = (y_probs > threshold).astype(int)
+        for col in X_columns:
+            if col in binary_mappings:
+                user_input[col] = st.selectbox(col, binary_mappings[col])
+                # Convert selection to 0/1 for model
+                if user_input[col] == binary_mappings[col][1]:
+                    user_input[col] = 1
+                else:
+                    user_input[col] = 0
+            else:
+                # Numeric input
+                user_input[col] = st.slider(
+                    col, float(df_encoded[col].min()), float(df_encoded[col].max()), float(df_encoded[col].mean())
+                )
 
-        acc = accuracy_score(y_test, y_pred)
-        f1 = f1_score(y_test, y_pred)
+        user_df = pd.DataFrame([user_input])
+        user_probs = model.predict_proba(user_df)[:, 1][0]
+        user_pred = 1 if user_probs > threshold else 0
 
-        col1, col2 = st.columns(2)
-        col1.metric("Model Accuracy", f"{acc:.2f}")
-        col2.metric("F1-score (Churn)", f"{f1:.2f}")
-
-        # Confusion Matrix
-        cm = confusion_matrix(y_test, y_pred)
-        fig4, ax4 = plt.subplots()
-        sns.heatmap(cm, annot=True, fmt="d", cmap="Blues",
-                    xticklabels=["No Churn", "Churn"],
-                    yticklabels=["No Churn", "Churn"], ax=ax4)
-        ax4.set_title("Confusion Matrix")
-        st.pyplot(fig4)
-
-        # Feature Importance
-        importance = pd.Series(model.feature_importances_, index=X.columns)
-        with st.expander("🔎 Top 10 Feature Importance"):
-            fig5, ax5 = plt.subplots()
-            importance.nlargest(10).plot(kind='barh', ax=ax5, color="#1f77b4")
-            ax5.set_title("Top 10 Important Features")
-            st.pyplot(fig5)
-
-    # ---------------------------
-    # Predict New Customer Section
-    # ---------------------------
-    elif selected == "Predict Churn":
-        
-        st.subheader("📌 Predict Churn for a New Customer")
-
-# Make sure the model exists
-try:
-    model
-except NameError:
-    st.warning("⚠️ Please train the model first in 'Model Training' section.")
-else:
-    user_input = {}
-    for col in X.columns:
-        if df_encoded[col].nunique() <= 2:  # binary
-            user_input[col] = st.selectbox(col, [0, 1])
-        else:  # numeric
-            user_input[col] = st.slider(col, float(X[col].min()), float(X[col].max()), float(X[col].mean()))
-
-    user_df = pd.DataFrame([user_input])
-    user_probs = model.predict_proba(user_df)[:, 1][0]
-    user_pred = 1 if user_probs > threshold else 0
-
-    st.markdown(f"### 🔮 Prediction: {'⚠️ Churn' if user_pred==1 else '✅ Not Churn'}")
-    st.markdown(f"**Churn Probability:** {user_probs:.2f}")
+        st.markdown(f"### 🔮 Prediction: {'⚠️ Churn' if user_pred==1 else '✅ Not Churn'}")
+        st.markdown(f"**Churn Probability:** {user_probs:.2f}")

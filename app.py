@@ -61,6 +61,7 @@ with st.sidebar:
 # ---------------------------
 st.title("📊 Customer Churn Prediction & Dashboard")
 uploaded_file = st.file_uploader("Upload your Telco Churn dataset", type=["csv"])
+
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
 

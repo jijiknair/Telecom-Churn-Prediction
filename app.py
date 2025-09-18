@@ -192,52 +192,60 @@ if uploaded_file is not None:
             st.pyplot(fig)
 
     # ---------------------------
-    # Predict Churn Section (Improved)
-    # ---------------------------
     elif selected == "Predict Churn":
-        st.subheader("📌 Predict Churn for a New Customer")
+    st.subheader("📌 Predict Churn for a New Customer")
 
-        if 'model' not in st.session_state:
-            st.warning("⚠️ Train the model first in 'Model Training' section.")
-        else:
-            model = st.session_state['model']
-            threshold = st.session_state['threshold']
-            X_columns = st.session_state['X_test'].columns
+    if 'model' not in st.session_state:
+        st.warning("⚠️ Train the model first in 'Model Training' section.")
+    else:
+        model = st.session_state['model']
+        threshold = st.session_state['threshold']
+        X_columns = st.session_state['X_test'].columns  # all features
 
-            # Top 8 important features
-            importance = pd.Series(model.feature_importances_, index=X_columns)
-            top_features = importance.nlargest(8).index.tolist()
+        # Top 8 important features
+        importance = pd.Series(model.feature_importances_, index=X_columns)
+        top_features = importance.nlargest(8).index.tolist()
 
-            st.markdown("Fill key customer details:")
+        st.markdown("Fill key customer details:")
 
-            user_input = {}
-            with st.form("predict_form"):
-                cols = st.columns(2)
-                for i, col in enumerate(top_features):
-                    if "_Yes" in col or "_No" in col or "_Male" in col or "_Female" in col:
-                        label = col.replace("_Yes","").replace("_No","").replace("_Male","Gender").replace("_Female","Gender")
-                        with cols[i % 2]:
-                            user_input[col] = st.selectbox(label, ["No", "Yes"])
-                            user_input[col] = 1 if user_input[col] == "Yes" else 0
-                    else:
-                        with cols[i % 2]:
-                            user_input[col] = st.slider(
-                                col,
-                                float(df_encoded[col].min()),
-                                float(df_encoded[col].max()),
-                                float(df_encoded[col].mean())
-                            )
+        user_input = {}
+        with st.form("predict_form"):
+            cols = st.columns(2)
+            for i, col in enumerate(top_features):
+                if "_Yes" in col or "_No" in col or "_Male" in col or "_Female" in col:
+                    label = col.replace("_Yes","").replace("_No","").replace("_Male","Gender").replace("_Female","Gender")
+                    with cols[i % 2]:
+                        val = st.selectbox(label, ["No", "Yes"])
+                        user_input[col] = 1 if val == "Yes" else 0
+                else:
+                    with cols[i % 2]:
+                        user_input[col] = st.slider(
+                            col,
+                            float(df_encoded[col].min()),
+                            float(df_encoded[col].max()),
+                            float(df_encoded[col].mean())
+                        )
 
-                submitted = st.form_submit_button("Predict Churn")
+            submitted = st.form_submit_button("Predict Churn")
 
-            if submitted:
-                user_df = pd.DataFrame([user_input])
-                prob = model.predict_proba(user_df)[:,1][0]
-                pred = "⚠️ Churn" if prob > threshold else "✅ Not Churn"
+        if submitted:
+            # Create full feature row with all columns
+            user_df = pd.DataFrame(columns=X_columns)
+            user_df.loc[0] = 0  # default = 0 for all features
 
-                st.markdown(f"""
-                    <div style='padding:20px; border-radius:16px; background-color:#f0f8ff; text-align:center; box-shadow: 0px 6px 15px rgba(0,0,0,0.1);'>
-                        <h3>Prediction: {pred}</h3>
-                        <p>Churn Probability: <b>{prob:.2f}</b></p>
-                    </div>
-                """, unsafe_allow_html=True)
+            # Update only the top features from user input
+            for col in user_input:
+                if col in user_df.columns:
+                    user_df.at[0, col] = user_input[col]
+
+            # Predict
+            prob = model.predict_proba(user_df)[:,1][0]
+            pred = "⚠️ Churn" if prob > threshold else "✅ Not Churn"
+
+            st.markdown(f"""
+                <div style='padding:20px; border-radius:16px; background-color:#f0f8ff; text-align:center; box-shadow: 0px 6px 15px rgba(0,0,0,0.1);'>
+                    <h3>Prediction: {pred}</h3>
+                    <p>Churn Probability: <b>{prob:.2f}</b></p>
+                </div>
+            """, unsafe_allow_html=True)
+

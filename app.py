@@ -140,20 +140,25 @@ if uploaded_file is not None:
     # Predict New Customer Section
     # ---------------------------
     elif selected == "Predict Churn":
+        
         st.subheader("📌 Predict Churn for a New Customer")
-        if acc is None:
-            st.warning("⚠️ Please train the model first in 'Model Training' section.")
-        else:
-            user_input = {}
-            for col in X.columns:
-                if df_encoded[col].nunique() <= 2:  # binary
-                    user_input[col] = st.selectbox(col, [0, 1])
-                else:  # numeric
-                    user_input[col] = st.slider(col, float(X[col].min()), float(X[col].max()), float(X[col].mean()))
 
-            user_df = pd.DataFrame([user_input])
-            user_probs = model.predict_proba(user_df)[:, 1][0]
-            user_pred = 1 if user_probs > threshold else 0
+# Make sure the model exists
+try:
+    model
+except NameError:
+    st.warning("⚠️ Please train the model first in 'Model Training' section.")
+else:
+    user_input = {}
+    for col in X.columns:
+        if df_encoded[col].nunique() <= 2:  # binary
+            user_input[col] = st.selectbox(col, [0, 1])
+        else:  # numeric
+            user_input[col] = st.slider(col, float(X[col].min()), float(X[col].max()), float(X[col].mean()))
 
-            st.markdown(f"### 🔮 Prediction: {'⚠️ Churn' if user_pred==1 else '✅ Not Churn'}")
-            st.markdown(f"**Churn Probability:** {user_probs:.2f}")
+    user_df = pd.DataFrame([user_input])
+    user_probs = model.predict_proba(user_df)[:, 1][0]
+    user_pred = 1 if user_probs > threshold else 0
+
+    st.markdown(f"### 🔮 Prediction: {'⚠️ Churn' if user_pred==1 else '✅ Not Churn'}")
+    st.markdown(f"**Churn Probability:** {user_probs:.2f}")

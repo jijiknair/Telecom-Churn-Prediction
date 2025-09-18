@@ -60,7 +60,7 @@ if uploaded_file is not None:
     st.subheader("📌 Key Business Insights")
 
     churn_rate = churn_counts["Yes"] / churn_counts.sum() * 100
-   st.write(f"1️⃣ **Overall churn rate is {churn_rate:.1f}% of customers.**")
+    st.write(f"1️⃣ **Overall churn rate is {churn_rate:.1f}% of customers.**")
 
     # Contract churn
     contract_churn = df.groupby("Contract")["Churn"].value_counts(normalize=True).unstack().fillna(0)

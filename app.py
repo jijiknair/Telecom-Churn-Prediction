@@ -8,38 +8,49 @@ from sklearn.metrics import classification_report, confusion_matrix
 from xgboost import XGBClassifier
 
 # =======================
-# Custom CSS for Styling
+# =======================
+# Custom CSS for Full Visibility
 # =======================
 st.markdown("""
 <style>
-/* Background Gradient */
+/* =======================
+   App Background
+   ======================= */
 .stApp {
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    background: linear-gradient(135deg, #1c1f2a, #283046, #31405a); /* dark gradient but lighter for readability */
     color: white;
 }
 
-/* Card Style */
+/* =======================
+   Card, Inputs, and DataFrames
+   ======================= */
 .stMarkdown, .stDataFrame, .stSelectbox, .stNumberInput, .stButton {
-    background-color: #1e293b !important;
+    background-color: #2c3a50 !important; /* slightly lighter dark card */
     color: white !important;
     border-radius: 12px;
     padding: 10px;
+    font-weight: bold;
 }
 
-/* Titles */
+/* =======================
+   Titles
+   ======================= */
 h1, h2, h3, h4 {
-    color: #facc15;
+    color: #facc15;  /* gold */
+    font-weight: bold;
 }
 
-/* Sidebar */
+/* =======================
+   Sidebar Styling
+   ======================= */
 section[data-testid="stSidebar"] {
-    background: #111827;
+    background: #1e293b;  /* lighter dark for sidebar */
     color: white;
 }
 
 /* Sidebar selectbox placeholder and text */
 div[data-baseweb="select"] > div > div > div > span {
-    color: #facc15 !important; /* Gold color */
+    color: #facc15 !important;  /* gold placeholder */
     font-weight: bold;
 }
 
@@ -49,32 +60,41 @@ div[data-baseweb="select"] > div > div > div > span {
     font-weight: bold !important;
 }
 
-/* Buttons */
+/* NumberInput label */
+.stNumberInput label {
+    color: #facc15 !important;
+    font-weight: bold !important;
+}
+
+/* =======================
+   Buttons
+   ======================= */
 button {
-    background-color: #facc15 !important;
+    background-color: #facc15 !important;  /* gold */
     color: black !important;
     font-weight: bold !important;
     border-radius: 8px !important;
 }
 
-/* NumberInput label */
-.stNumberInput label {
-    color: #FF5733 !important;
-    font-weight: bold !important;
+/* =======================
+   DataFrame table text
+   ======================= */
+.stDataFrame div.row_heading, .stDataFrame div.column_heading {
+    color: white !important;
+    font-weight: bold;
+}
+.stDataFrame div.cell {
+    color: white !important;
 }
 </style>
 """, unsafe_allow_html=True)
-
 # =======================
-# Page Title (Centered)
+# Example Page Title
 # =======================
 st.markdown(
-    """
-    <h1 style='text-align: center; color: #facc15; font-size: 48px;'>📊 Customer Churn Prediction</h1>
-    """,
+    "<h1 style='text-align:center; color:#facc15; font-size:48px;'>📊 Customer Churn Prediction</h1>",
     unsafe_allow_html=True
 )
-
 # =======================
 # Load Dataset
 # =======================

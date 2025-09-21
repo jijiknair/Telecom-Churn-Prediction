@@ -129,41 +129,9 @@ if option == "Dashboard":
     churn_rate = total_churned / total_customers * 100
     avg_monthly = df['MonthlyCharges'].mean()
 
-    # Inject CSS for KPI styling
-    st.markdown("""
-        <style>
-        .kpi-card {
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            color: white;
-            box-shadow: 0px 4px 12px rgba(0,0,0,0.3);
-            margin: 5px;
-            flex: 1;
-        }
-        .kpi-container {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .kpi-card h3 {
-            font-size: 18px;
-            margin-bottom: 5px;
-        }
-        .kpi-card p {
-            font-size: 22px;
-            font-weight: bold;
-            margin: 0;
-        }
-        .customers { background-color: #2ecc71; }   /* Green */
-        .churned { background-color: #e74c3c; }     /* Red */
-        .rate { background-color: #f39c12; }        /* Orange */
-        .monthly { background-color: #3498db; }     /* Blue */
-        </style>
-    """, unsafe_allow_html=True)
-
-    # Custom KPI layout
+    # Inject CSS for KPI styling  
+    
+    
     st.markdown(f"""
     <div class="kpi-container">
         <div class="kpi-card customers">
@@ -213,7 +181,7 @@ if option == "Dashboard":
         st.subheader("Internet Service")
         fig, ax = plt.subplots(figsize=(5, 4))
         sns.countplot(x='InternetService', data=df, palette="rocket", ax=ax)
-        ax.set_xticklabels([label.get_text() for label in ax.get_xticklabels()], rotation=45)
+        ax.set_xticklabels([label.get_text() for label in ax.get_xticklabels()], rotation=)
         st.pyplot(fig)
 
     # Chart 4: Payment Method
@@ -221,7 +189,7 @@ if option == "Dashboard":
         st.subheader("Payment Method")
         fig, ax = plt.subplots(figsize=(5, 4))
         sns.countplot(x=df['PaymentMethod'].map(payment_labels), palette="coolwarm", ax=ax)
-        plt.xticks(rotation=45)
+        plt.xticks(rotation=0)
         st.pyplot(fig)
 
 # =======================

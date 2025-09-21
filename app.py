@@ -192,50 +192,54 @@ if uploaded_file is not None:
             st.pyplot(fig)
 
     # ---------------------------
-    elif choice == "Predict Churn":
+    # ---------------------------
+    # Predict Churn Section
+    # ---------------------------
+    elif selected == "Predict Churn":
         st.subheader("📌 Predict Churn for a New Customer")
 
         with st.form("churn_form"):
-             st.write("Enter customer details:")
+            st.write("Enter customer details:")
 
-             tenure = st.number_input("Tenure (months)", min_value=0, max_value=72, value=12)
-             MonthlyCharges = st.number_input("Monthly Charges", min_value=0.0, max_value=200.0, value=70.0)
-             TotalCharges = st.number_input("Total Charges", min_value=0.0, max_value=10000.0, value=1000.0)
-             Contract = st.selectbox("Contract", ["Month-to-month", "One year", "Two year"])
-             InternetService = st.selectbox("Internet Service", ["DSL", "Fiber optic", "No"])
-             PaymentMethod = st.selectbox("Payment Method", [
-            "Electronic check", "Mailed check", "Bank transfer (automatic)", "Credit card (automatic)"
-             ])
-             SeniorCitizen = st.selectbox("Senior Citizen", [0, 1])
-             Partner = st.selectbox("Partner", ["Yes", "No"])
-             Dependents = st.selectbox("Dependents", ["Yes", "No"])
+            tenure = st.number_input("Tenure (months)", min_value=0, max_value=72, value=12)
+            MonthlyCharges = st.number_input("Monthly Charges", min_value=0.0, max_value=200.0, value=70.0)
+            TotalCharges = st.number_input("Total Charges", min_value=0.0, max_value=10000.0, value=1000.0)
+            Contract = st.selectbox("Contract", ["Month-to-month", "One year", "Two year"])
+            InternetService = st.selectbox("Internet Service", ["DSL", "Fiber optic", "No"])
+            PaymentMethod = st.selectbox("Payment Method", [
+                "Electronic check", "Mailed check", "Bank transfer (automatic)", "Credit card (automatic)"
+            ])
+            SeniorCitizen = st.selectbox("Senior Citizen", [0, 1])
+            Partner = st.selectbox("Partner", ["Yes", "No"])
+            Dependents = st.selectbox("Dependents", ["Yes", "No"])
 
-             submit = st.form_submit_button("Predict")
+            submit = st.form_submit_button("Predict")
 
-            if submit:
-        # Prepare input for model
-              new_customer = {
-              "tenure": tenure,
-              "MonthlyCharges": MonthlyCharges,
-              "TotalCharges": TotalCharges,
-              "Contract": Contract,
-              "InternetService": InternetService,
-              "PaymentMethod": PaymentMethod,
-              "SeniorCitizen": SeniorCitizen,
-              "Partner": Partner,
-              "Dependents": Dependents
-        }
+        if submit:
+            # Prepare input for model
+            new_customer = {
+                "tenure": tenure,
+                "MonthlyCharges": MonthlyCharges,
+                "TotalCharges": TotalCharges,
+                "Contract": Contract,
+                "InternetService": InternetService,
+                "PaymentMethod": PaymentMethod,
+                "SeniorCitizen": SeniorCitizen,
+                "Partner": Partner,
+                "Dependents": Dependents
+            }
 
-               new_df = pd.DataFrame([new_customer])
+            new_df = pd.DataFrame([new_customer])
 
-        # Apply same encoding as training data
-               new_df_encoded = pd.get_dummies(new_df)
-               new_df_encoded = new_df_encoded.reindex(columns=X.columns, fill_value=0)
+            # Apply same encoding as training data
+            new_df_encoded = pd.get_dummies(new_df)
+            new_df_encoded = new_df_encoded.reindex(columns=X.columns, fill_value=0)
 
-               prediction = model.predict(new_df_encoded)[0]
-               probability = model.predict_proba(new_df_encoded)[0][1]
+            prediction = model.predict(new_df_encoded)[0]
+            probability = model.predict_proba(new_df_encoded)[0][1]
 
-               if prediction == 1:
-                  st.error(f"❌ The customer is likely to churn (Probability: {probability:.2f})")
-               else:
-                  st.success(f"✅ The customer is not likely to churn (Probability: {probability:.2f})")
+            if prediction == 1:
+                st.error(f"❌ The customer is likely to churn (Probability: {probability:.2f})")
+            else:
+                st.success(f"✅ The customer is not likely to churn (Probability: {probability:.2f})")
+

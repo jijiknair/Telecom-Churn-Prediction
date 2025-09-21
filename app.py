@@ -246,14 +246,21 @@ elif option == "Model Training":
 
     st.subheader("📌 Confusion Matrix")
     cm = confusion_matrix(y_test, y_pred)
-    fig, ax = plt.subplots()
+    
+    # Make figure larger and fit container width
+    fig, ax = plt.subplots(figsize=(8, 6))  # adjust size as needed
     sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", ax=ax)
     ax.set_xlabel("Predicted")
     ax.set_ylabel("Actual")
-    st.pyplot(fig)
+    
+    st.pyplot(fig, use_container_width=True)  # auto-fit to container width
+
+    st.subheader("📊 Classification Report")
+    st.text(classification_report(y_test, y_pred))
 
     joblib.dump(model, "churn_model.pkl")
     st.success("✅ Model trained and saved successfully!")
+
 
 # =======================
 # Predict Churn Section

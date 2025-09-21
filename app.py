@@ -122,39 +122,78 @@ payment_labels = {
 # =======================
 if option == "Dashboard":
     st.title("📈 Dashboard")
-
     # KPI Calculations
     total_customers = df.shape[0]
     total_churned = df[df['Churn'] == 'Yes'].shape[0]
     churn_rate = total_churned / total_customers * 100
     avg_monthly = df['MonthlyCharges'].mean()
 
-    # Inject CSS for KPI styling  
-    
-    
-    st.markdown(f"""
-    <div class="kpi-container">
-        <div class="kpi-card customers">
-            <h3>Total Customers</h3>
-            <p>{total_customers}</p>
-        </div>
-        <div class="kpi-card churned">
-            <h3>Total Churned</h3>
-            <p>{total_churned}</p>
-        </div>
-        <div class="kpi-card rate">
-            <h3>Churn Rate</h3>
-            <p>{churn_rate:.2f}%</p>
-        </div>
-        <div class="kpi-card monthly">
-            <h3>Avg Monthly Charges</h3>
-            <p>${avg_monthly:.2f}</p>
-        </div>
+    # Inject CSS for KPI styling      
+    st.markdown("""
+    <style>
+    .kpi-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+     .kpi-card {
+        height: 150px;
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        color: white;
+        box-shadow: 0px 4px 12px rgba(0,0,0,0.3);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .kpi-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0px 6px 18px rgba(255, 215, 0, 0.6); /* golden glow */
+    }
+    .kpi-card h3 {
+        font-size: 18px;
+        margin-bottom: 8px;
+    }
+    .kpi-card p {
+        font-size: 22px;
+        font-weight: bold;
+        margin: 0;
+    }
+    .customers { background-color: #2ecc71; }   /* Green */
+    .churned { background-color: #e74c3c; }     /* Red */
+    .rate { background-color: #f39c12; }        /* Orange */
+    .monthly { background-color: #3498db; }     /* Blue */
+    </style>
+""", unsafe_allow_html=True)
+
+# Render KPI cards
+st.markdown(f"""
+<div class="kpi-container">
+    <div class="kpi-card customers">
+        <h3>Total Customers</h3>
+        <p>{total_customers}</p>
     </div>
-    """, unsafe_allow_html=True)
+    <div class="kpi-card churned">
+        <h3>Total Churned</h3>
+        <p>{total_churned}</p>
+    </div>
+    <div class="kpi-card rate">
+        <h3>Churn Rate</h3>
+        <p>{churn_rate:.2f}%</p>
+    </div>
+    <div class="kpi-card monthly">
+        <h3>Avg Monthly Charges</h3>
+        <p>${avg_monthly:.2f}</p>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
-    st.markdown("---")
+st.markdown("---")
 
+    
     # ==============================
     # Charts Section (2 x 2 layout)
     # ==============================
@@ -173,7 +212,7 @@ if option == "Dashboard":
         st.subheader("Contract Types")
         fig, ax = plt.subplots(figsize=(5, 4))
         sns.countplot(x='Contract', data=df, palette="mako", ax=ax)
-        plt.xticks(rotation=45)
+        plt.xticks(rotation=0)
         st.pyplot(fig)
 
     # Chart 3: Internet Service

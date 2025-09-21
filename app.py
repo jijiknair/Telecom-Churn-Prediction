@@ -192,60 +192,50 @@ if uploaded_file is not None:
             st.pyplot(fig)
 
     # ---------------------------
-    elif selected == "Predict Churn":
+    elif choice == "Predict Churn":
     st.subheader("📌 Predict Churn for a New Customer")
 
-    if 'model' not in st.session_state:
-        st.warning("⚠️ Train the model first in 'Model Training' section.")
-    else:
-        model = st.session_state['model']
-        threshold = st.session_state['threshold']
-        X_columns = st.session_state['X_test'].columns  # all features
+    with st.form("churn_form"):
+        st.write("Enter customer details:")
 
-        # Top 8 important features
-        importance = pd.Series(model.feature_importances_, index=X_columns)
-        top_features = importance.nlargest(8).index.tolist()
+        tenure = st.number_input("Tenure (months)", min_value=0, max_value=72, value=12)
+        MonthlyCharges = st.number_input("Monthly Charges", min_value=0.0, max_value=200.0, value=70.0)
+        TotalCharges = st.number_input("Total Charges", min_value=0.0, max_value=10000.0, value=1000.0)
+        Contract = st.selectbox("Contract", ["Month-to-month", "One year", "Two year"])
+        InternetService = st.selectbox("Internet Service", ["DSL", "Fiber optic", "No"])
+        PaymentMethod = st.selectbox("Payment Method", [
+            "Electronic check", "Mailed check", "Bank transfer (automatic)", "Credit card (automatic)"
+        ])
+        SeniorCitizen = st.selectbox("Senior Citizen", [0, 1])
+        Partner = st.selectbox("Partner", ["Yes", "No"])
+        Dependents = st.selectbox("Dependents", ["Yes", "No"])
 
-        st.markdown("Fill key customer details:")
+        submit = st.form_submit_button("Predict")
 
-        user_input = {}
-        with st.form("predict_form"):
-            cols = st.columns(2)
-            for i, col in enumerate(top_features):
-                if "_Yes" in col or "_No" in col or "_Male" in col or "_Female" in col:
-                    label = col.replace("_Yes","").replace("_No","").replace("_Male","Gender").replace("_Female","Gender")
-                    with cols[i % 2]:
-                        val = st.selectbox(label, ["No", "Yes"])
-                        user_input[col] = 1 if val == "Yes" else 0
-                else:
-                    with cols[i % 2]:
-                        user_input[col] = st.slider(
-                            col,
-                            float(df_encoded[col].min()),
-                            float(df_encoded[col].max()),
-                            float(df_encoded[col].mean())
-                        )
+    if submit:
+        # Prepare input for model
+        new_customer = {
+            "tenure": tenure,
+            "MonthlyCharges": MonthlyCharges,
+            "TotalCharges": TotalCharges,
+            "Contract": Contract,
+            "InternetService": InternetService,
+            "PaymentMethod": PaymentMethod,
+            "SeniorCitizen": SeniorCitizen,
+            "Partner": Partner,
+            "Dependents": Dependents
+        }
 
-            submitted = st.form_submit_button("Predict Churn")
+        new_df = pd.DataFrame([new_customer])
 
-        if submitted:
-            # Create full feature row with all columns
-            user_df = pd.DataFrame(columns=X_columns)
-            user_df.loc[0] = 0  # default = 0 for all features
+        # Apply same encoding as training data
+        new_df_encoded = pd.get_dummies(new_df)
+        new_df_encoded = new_df_encoded.reindex(columns=X.columns, fill_value=0)
 
-            # Update only the top features from user input
-            for col in user_input:
-                if col in user_df.columns:
-                    user_df.at[0, col] = user_input[col]
+        prediction = model.predict(new_df_encoded)[0]
+        probability = model.predict_proba(new_df_encoded)[0][1]
 
-            # Predict
-            prob = model.predict_proba(user_df)[:,1][0]
-            pred = "⚠️ Churn" if prob > threshold else "✅ Not Churn"
-
-            st.markdown(f"""
-                <div style='padding:20px; border-radius:16px; background-color:#f0f8ff; text-align:center; box-shadow: 0px 6px 15px rgba(0,0,0,0.1);'>
-                    <h3>Prediction: {pred}</h3>
-                    <p>Churn Probability: <b>{prob:.2f}</b></p>
-                </div>
-            """, unsafe_allow_html=True)
-
+        if prediction == 1:
+            st.error(f"❌ The customer is likely to churn (Probability: {probability:.2f})")
+        else:
+            st.success(f"✅ The customer is not likely to churn (Probability: {probability:.2f})")

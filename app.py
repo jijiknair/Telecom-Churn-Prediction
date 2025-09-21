@@ -37,10 +37,16 @@ section[data-testid="stSidebar"] {
     color: white;
 }
 
-/* Sidebar selectbox placeholder text */
+/* Sidebar selectbox placeholder and text */
 div[data-baseweb="select"] > div > div > div > span {
-    color: #facc15 !important;
+    color: #facc15 !important; /* Gold color */
     font-weight: bold;
+}
+
+/* Sidebar selectbox label */
+.stSelectbox label {
+    color: #facc15 !important;
+    font-weight: bold !important;
 }
 
 /* Buttons */
@@ -51,13 +57,26 @@ button {
     border-radius: 8px !important;
 }
 
-/* Labels */
-.stSelectbox label, .stNumberInput label {
+/* NumberInput label */
+.stNumberInput label {
     color: #FF5733 !important;
     font-weight: bold !important;
 }
 </style>
 """, unsafe_allow_html=True)
+
+# =======================
+# Page Title (Centered)
+# =======================
+st.markdown(
+    """
+    <h1 style='text-align: center; color: #facc15; font-size: 48px;'>📊 Customer Churn Prediction</h1>
+    """,
+    unsafe_allow_html=True
+)
+
+
+
 
 
 # =======================

@@ -75,10 +75,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-
-
-
-
 # =======================
 # Load Dataset
 # =======================
@@ -127,20 +123,27 @@ if option == "Dashboard":
         sns.countplot(x='Contract', data=df, palette="mako", ax=ax)
         st.pyplot(fig)
 
-    # Chart 3
+ 
+   # Chart 3
     with col3:
-        st.subheader("Internet Service")
-        fig, ax = plt.subplots(figsize=(5, 4))
-        sns.countplot(x='InternetService', data=df, palette="rocket", ax=ax)
-        st.pyplot(fig)
+         st.subheader("Internet Service")
+         fig, ax = plt.subplots(figsize=(5, 4))
 
-    # Shorten x-axis labels
-short_labels = {
-    'Electronic check': 'E-Check',
-    'Mailed check': 'M-Check',
-    'Bank transfer (automatic)': 'Bank Transfer',
-    'Credit card (automatic)': 'Credit Card'
-}
+    # Plot
+         sns.countplot(x='InternetService', data=df, palette="rocket", ax=ax)
+
+    # Apply short labels
+         short_labels = {
+                    'Electronic check': 'E-Check',
+                     'Mailed check': 'M-Check',
+                    'Bank transfer (automatic)': 'Bank Transfer',
+                     'Credit card (automatic)': 'Credit Card'
+    }
+
+    # Replace the tick labels
+         ax.set_xticklabels([short_labels.get(label.get_text(), label.get_text()) for label in ax.get_xticklabels()])
+
+         st.pyplot(fig)
     
   
 # Chart 4
@@ -186,10 +189,12 @@ elif option == "Model Training":
 # Predict Churn Section
 # =======================
 elif option == "Predict Churn":
-    st.title("🔮 Predict Churn for a New Customer")
+    st.markdown(
+        "<h2 style='white-space: nowrap; color: white;'>🔮 Predict Churn for a New Customer</h1>",
+        unsafe_allow_html=True
+    )
 
     model = joblib.load("churn_model.pkl")
-
     gender = st.selectbox("Gender", ["Male", "Female"])
     senior = st.selectbox("Senior Citizen", [0, 1])
     tenure = st.number_input("Tenure (months)", min_value=0, max_value=100, value=12)

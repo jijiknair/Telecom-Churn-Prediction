@@ -181,7 +181,7 @@ if option == "Dashboard":
         st.subheader("Internet Service")
         fig, ax = plt.subplots(figsize=(5, 4))
         sns.countplot(x='InternetService', data=df, palette="rocket", ax=ax)
-        ax.set_xticklabels([label.get_text() for label in ax.get_xticklabels()], rotation=)
+        ax.set_xticklabels([label.get_text() for label in ax.get_xticklabels()], rotation=0)
         st.pyplot(fig)
 
     # Chart 4: Payment Method

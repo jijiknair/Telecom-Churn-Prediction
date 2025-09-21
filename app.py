@@ -83,79 +83,70 @@ if uploaded_file is not None:
     # ---------------------------
     # Dashboard Section
     # ---------------------------
-    if selected == "Dashboard":
-        st.subheader("📊 Churn Dashboard")
+    # ---------------------------
+# Dashboard Section
+# ---------------------------
+if selected == "Dashboard":
+    st.subheader("📊 Churn Dashboard")
 
-        churn_counts = df['Churn'].value_counts()
-        churn_rate = churn_counts.get("Yes", 0) / churn_counts.sum() * 100
-        month2month_churn = df.groupby("Contract")["Churn"].value_counts(normalize=True).unstack().fillna(0).get("Yes", {}).get("Month-to-month", 0)*100
+    churn_counts = df['Churn'].value_counts()
+    churn_rate = churn_counts.get("Yes", 0) / churn_counts.sum() * 100
+    month2month_churn = df.groupby("Contract")["Churn"].value_counts(normalize=True).unstack().fillna(0).get("Yes", {}).get("Month-to-month", 0)*100
 
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.markdown(f"<div class='metric-container'><b>Overall Churn Rate</b><br>{churn_rate:.1f}%</div>", unsafe_allow_html=True)
-        with col2:
-            st.markdown(f"<div class='metric-container'><b>Month-to-Month Churn</b><br>{month2month_churn:.1f}%</div>", unsafe_allow_html=True)
-        with col3:
-            st.markdown(f"<div class='metric-container'><b>High-paying Churn Rate</b><br>{(df[df['MonthlyCharges'] > df['MonthlyCharges'].median()]['Churn']=='Yes').mean()*100:.1f}%</div>", unsafe_allow_html=True)
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.markdown(f"<div class='metric-container'><b>Overall Churn Rate</b><br>{churn_rate:.1f}%</div>", unsafe_allow_html=True)
+    with col2:
+        st.markdown(f"<div class='metric-container'><b>Month-to-Month Churn</b><br>{month2month_churn:.1f}%</div>", unsafe_allow_html=True)
+    with col3:
+        st.markdown(f"<div class='metric-container'><b>High-paying Churn Rate</b><br>{(df[df['MonthlyCharges'] > df['MonthlyCharges'].median()]['Churn']=='Yes').mean()*100:.1f}%</div>", unsafe_allow_html=True)
 
-        # Charts in equal-size columns with fixed figsize to keep container boxes same size
-        colA, colB = st.columns(2)
+    # Fixed size for all charts (same height/width)
+    fig_w, fig_h = (6, 4)
 
-        # Churn Pie Chart (fixed size)
-        with colA:
-            st.markdown("<div class='card'>", unsafe_allow_html=True)
-            fig1, ax1 = plt.subplots(figsize=(7,4))
-            ax1.pie(churn_counts, labels=churn_counts.index, autopct='%1.1f%%', startangle=90, colors=['#2ca02c','#d62728'])
-            ax1.set_title("Churn Distribution")
-            plt.tight_layout()
-            st.pyplot(fig1, use_container_width=True)
-            plt.close(fig1)
-            st.markdown("</div>", unsafe_allow_html=True)
+    colA, colB = st.columns(2)
+    with colA:
+        st.markdown("<div class='card'>", unsafe_allow_html=True)
+        fig1, ax1 = plt.subplots(figsize=(fig_w, fig_h))
+        ax1.pie(churn_counts, labels=churn_counts.index, autopct='%1.1f%%',
+                startangle=90, colors=['#2ca02c','#d62728'])
+        ax1.set_title("Churn Distribution")
+        st.pyplot(fig1, use_container_width=True)
+        plt.close(fig1)
+        st.markdown("</div>", unsafe_allow_html=True)
 
-        # Contract vs Churn (same fixed size)
-        with colB:
-            st.markdown("<div class='card'>", unsafe_allow_html=True)
-            fig2, ax2 = plt.subplots(figsize=(7,4))
-            sns.countplot(x="Contract", hue="Churn", data=df, palette=["#2ca02c","#d62728"], ax=ax2)
-            ax2.set_title("Contract Type vs Churn")
-            plt.xticks(rotation=30)
-            plt.tight_layout()
-            st.pyplot(fig2, use_container_width=True)
-            plt.close(fig2)
-            st.markdown("</div>", unsafe_allow_html=True)
+    with colB:
+        st.markdown("<div class='card'>", unsafe_allow_html=True)
+        fig2, ax2 = plt.subplots(figsize=(fig_w, fig_h))
+        sns.countplot(x="Contract", hue="Churn", data=df,
+                      palette=["#2ca02c","#d62728"], ax=ax2)
+        ax2.set_title("Contract Type vs Churn")
+        plt.xticks(rotation=30)
+        st.pyplot(fig2, use_container_width=True)
+        plt.close(fig2)
+        st.markdown("</div>", unsafe_allow_html=True)
 
-        # Monthly Charges vs Churn & Tenure vs Churn (also same size)
-        colC, colD = st.columns(2)
-        with colC:
-            st.markdown("<div class='card'>", unsafe_allow_html=True)
-            fig3, ax3 = plt.subplots(figsize=(7,4))
-            sns.boxplot(x="Churn", y="MonthlyCharges", data=df, palette=["#2ca02c","#d62728"], ax=ax3)
-            ax3.set_title("Monthly Charges vs Churn")
-            plt.tight_layout()
-            st.pyplot(fig3, use_container_width=True)
-            plt.close(fig3)
-            st.markdown("</div>", unsafe_allow_html=True)
+    colC, colD = st.columns(2)
+    with colC:
+        st.markdown("<div class='card'>", unsafe_allow_html=True)
+        fig3, ax3 = plt.subplots(figsize=(fig_w, fig_h))
+        sns.boxplot(x="Churn", y="MonthlyCharges", data=df,
+                    palette=["#2ca02c","#d62728"], ax=ax3)
+        ax3.set_title("Monthly Charges vs Churn")
+        st.pyplot(fig3, use_container_width=True)
+        plt.close(fig3)
+        st.markdown("</div>", unsafe_allow_html=True)
 
-        with colD:
-            st.markdown("<div class='card'>", unsafe_allow_html=True)
-            fig4, ax4 = plt.subplots(figsize=(7,4))
-            sns.boxplot(x="Churn", y="tenure", data=df, palette=["#2ca02c","#d62728"], ax=ax4)
-            ax4.set_title("Tenure vs Churn")
-            plt.tight_layout()
-            st.pyplot(fig4, use_container_width=True)
-            plt.close(fig4)
-            st.markdown("</div>", unsafe_allow_html=True)
+    with colD:
+        st.markdown("<div class='card'>", unsafe_allow_html=True)
+        fig4, ax4 = plt.subplots(figsize=(fig_w, fig_h))
+        sns.boxplot(x="Churn", y="tenure", data=df,
+                    palette=["#2ca02c","#d62728"], ax=ax4)
+        ax4.set_title("Tenure vs Churn")
+        st.pyplot(fig4, use_container_width=True)
+        plt.close(fig4)
+        st.markdown("</div>", unsafe_allow_html=True)
 
-        # Insights
-        with st.expander("📌 Key Business Insights"):
-            avg_tenure_churned = df[df["Churn"]=="Yes"]["tenure"].mean()
-            avg_tenure_stayed = df[df["Churn"]=="No"]["tenure"].mean()
-            high_charges_churn = df[df['MonthlyCharges'] > df['MonthlyCharges'].median()]["Churn"].value_counts(normalize=True).get("Yes",0)*100
-            st.markdown(f"1️⃣ **Overall churn rate:** {churn_rate:.1f}%")
-            st.markdown(f"2️⃣ **Month-to-Month contracts churn:** {month2month_churn:.1f}%")
-            st.markdown(f"3️⃣ **High-paying customers churn rate:** {high_charges_churn:.1f}%")
-            st.markdown(f"4️⃣ **Average tenure:** Churned {avg_tenure_churned:.1f} months, Loyal {avg_tenure_stayed:.1f} months")
-            st.info("💡 Focus retention on month-to-month, high-charge, short-tenure customers.")
 
     # ---------------------------
     # Model Training Section

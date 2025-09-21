@@ -61,6 +61,7 @@ st.title("📊 Customer Churn Prediction & Dashboard")
 uploaded_file = st.file_uploader("Upload your Telco Churn dataset", type=["csv"])
 
 if uploaded_file is not None:
+    # load
     df = pd.read_csv(uploaded_file)
     st.subheader("Dataset Preview")
     st.dataframe(df.head())
@@ -69,10 +70,14 @@ if uploaded_file is not None:
     # Data Cleaning & Encoding
     # ---------------------------
     if 'customerID' in df.columns:
-        df.drop('customerID', axis=1, inplace=True)
+        df = df.drop('customerID', axis=1)
 
-    df['TotalCharges'] = pd.to_numeric(df['TotalCharges'], errors='coerce')
-    df['TotalCharges'].fillna(df['TotalCharges'].median(), inplace=True)
+    # ensure numeric
+    if 'TotalCharges' in df.columns:
+        df['TotalCharges'] = pd.to_numeric(df['TotalCharges'], errors='coerce')
+        df['TotalCharges'].fillna(df['TotalCharges'].median(), inplace=True)
+
+    # encoded dataframe used for training
     df_encoded = pd.get_dummies(df, drop_first=True)
 
     # ---------------------------
@@ -86,55 +91,66 @@ if uploaded_file is not None:
         month2month_churn = df.groupby("Contract")["Churn"].value_counts(normalize=True).unstack().fillna(0).get("Yes", {}).get("Month-to-month", 0)*100
 
         col1, col2, col3 = st.columns(3)
-        with col1: st.markdown(f"<div class='metric-container'><b>Overall Churn Rate</b><br>{churn_rate:.1f}%</div>", unsafe_allow_html=True)
-        with col2: st.markdown(f"<div class='metric-container'><b>Month-to-Month Churn</b><br>{month2month_churn:.1f}%</div>", unsafe_allow_html=True)
-        with col3: st.markdown(f"<div class='metric-container'><b>High-paying Churn Rate</b><br>{(df[df['MonthlyCharges'] > df['MonthlyCharges'].median()]['Churn']=='Yes').mean()*100:.1f}%</div>", unsafe_allow_html=True)
-
-        # Charts in equal-size columns
-        col1, col2 = st.columns(2)
-
-        # Churn Pie Chart
         with col1:
+            st.markdown(f"<div class='metric-container'><b>Overall Churn Rate</b><br>{churn_rate:.1f}%</div>", unsafe_allow_html=True)
+        with col2:
+            st.markdown(f"<div class='metric-container'><b>Month-to-Month Churn</b><br>{month2month_churn:.1f}%</div>", unsafe_allow_html=True)
+        with col3:
+            st.markdown(f"<div class='metric-container'><b>High-paying Churn Rate</b><br>{(df[df['MonthlyCharges'] > df['MonthlyCharges'].median()]['Churn']=='Yes').mean()*100:.1f}%</div>", unsafe_allow_html=True)
+
+        # Charts in equal-size columns with fixed figsize to keep container boxes same size
+        colA, colB = st.columns(2)
+
+        # Churn Pie Chart (fixed size)
+        with colA:
             st.markdown("<div class='card'>", unsafe_allow_html=True)
-            fig1, ax1 = plt.subplots()
+            fig1, ax1 = plt.subplots(figsize=(7,4))
             ax1.pie(churn_counts, labels=churn_counts.index, autopct='%1.1f%%', startangle=90, colors=['#2ca02c','#d62728'])
             ax1.set_title("Churn Distribution")
-            st.pyplot(fig1)
+            plt.tight_layout()
+            st.pyplot(fig1, use_container_width=True)
+            plt.close(fig1)
             st.markdown("</div>", unsafe_allow_html=True)
 
-        # Contract vs Churn
-        with col2:
+        # Contract vs Churn (same fixed size)
+        with colB:
             st.markdown("<div class='card'>", unsafe_allow_html=True)
-            fig2, ax2 = plt.subplots()
+            fig2, ax2 = plt.subplots(figsize=(7,4))
             sns.countplot(x="Contract", hue="Churn", data=df, palette=["#2ca02c","#d62728"], ax=ax2)
-            plt.xticks(rotation=30)
             ax2.set_title("Contract Type vs Churn")
-            st.pyplot(fig2)
+            plt.xticks(rotation=30)
+            plt.tight_layout()
+            st.pyplot(fig2, use_container_width=True)
+            plt.close(fig2)
             st.markdown("</div>", unsafe_allow_html=True)
 
-        # Monthly Charges vs Churn & Tenure vs Churn
-        col3, col4 = st.columns(2)
-        with col3:
+        # Monthly Charges vs Churn & Tenure vs Churn (also same size)
+        colC, colD = st.columns(2)
+        with colC:
             st.markdown("<div class='card'>", unsafe_allow_html=True)
-            fig3, ax3 = plt.subplots()
+            fig3, ax3 = plt.subplots(figsize=(7,4))
             sns.boxplot(x="Churn", y="MonthlyCharges", data=df, palette=["#2ca02c","#d62728"], ax=ax3)
             ax3.set_title("Monthly Charges vs Churn")
-            st.pyplot(fig3)
+            plt.tight_layout()
+            st.pyplot(fig3, use_container_width=True)
+            plt.close(fig3)
             st.markdown("</div>", unsafe_allow_html=True)
 
-        with col4:
+        with colD:
             st.markdown("<div class='card'>", unsafe_allow_html=True)
-            fig4, ax4 = plt.subplots()
+            fig4, ax4 = plt.subplots(figsize=(7,4))
             sns.boxplot(x="Churn", y="tenure", data=df, palette=["#2ca02c","#d62728"], ax=ax4)
             ax4.set_title("Tenure vs Churn")
-            st.pyplot(fig4)
+            plt.tight_layout()
+            st.pyplot(fig4, use_container_width=True)
+            plt.close(fig4)
             st.markdown("</div>", unsafe_allow_html=True)
 
         # Insights
         with st.expander("📌 Key Business Insights"):
             avg_tenure_churned = df[df["Churn"]=="Yes"]["tenure"].mean()
             avg_tenure_stayed = df[df["Churn"]=="No"]["tenure"].mean()
-            high_charges_churn = df[df["MonthlyCharges"] > df["MonthlyCharges"].median()]["Churn"].value_counts(normalize=True).get("Yes",0)*100
+            high_charges_churn = df[df['MonthlyCharges'] > df['MonthlyCharges'].median()]["Churn"].value_counts(normalize=True).get("Yes",0)*100
             st.markdown(f"1️⃣ **Overall churn rate:** {churn_rate:.1f}%")
             st.markdown(f"2️⃣ **Month-to-Month contracts churn:** {month2month_churn:.1f}%")
             st.markdown(f"3️⃣ **High-paying customers churn rate:** {high_charges_churn:.1f}%")
@@ -147,93 +163,128 @@ if uploaded_file is not None:
     elif selected == "Model Training":
         st.subheader("⚙️ Model Training")
 
-        X = df_encoded.drop('Churn_Yes', axis=1)
-        y = df_encoded['Churn_Yes']
+        # prepare features & label
+        if 'Churn_Yes' not in df_encoded.columns:
+            st.error("Encoded target column 'Churn_Yes' not found. Make sure your CSV contains 'Churn' and encoding ran correctly.")
+        else:
+            X = df_encoded.drop('Churn_Yes', axis=1)
+            y = df_encoded['Churn_Yes']
 
-        X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=0.2, random_state=42
-        )
+            X_train, X_test, y_train, y_test = train_test_split(
+                X, y, test_size=0.2, random_state=42
+            )
 
-        sm = SMOTE(random_state=42)
-        X_train_res, y_train_res = sm.fit_resample(X_train, y_train)
+            sm = SMOTE(random_state=42)
+            X_train_res, y_train_res = sm.fit_resample(X_train, y_train)
 
-        model = XGBClassifier(random_state=42, eval_metric="logloss")
-        model.fit(X_train_res, y_train_res)
+            model = XGBClassifier(random_state=42, eval_metric="logloss")
+            model.fit(X_train_res, y_train_res)
 
-        # Save in session
-        st.session_state['model'] = model
-        st.session_state['X_test'] = X_test
-        st.session_state['y_test'] = y_test
-        st.session_state['threshold'] = 0.27
+            # Save in session for prediction
+            st.session_state['model'] = model
+            st.session_state['X_test'] = X_test
+            st.session_state['y_test'] = y_test
+            st.session_state['threshold'] = 0.27
+            st.session_state['X_columns'] = X.columns  # <-- important
 
-        y_probs = model.predict_proba(X_test)[:, 1]
-        y_pred = (y_probs > st.session_state['threshold']).astype(int)
-        acc = accuracy_score(y_test, y_pred)
-        f1 = f1_score(y_test, y_pred)
-        cm = confusion_matrix(y_test, y_pred)
+            # Eval
+            y_probs = model.predict_proba(X_test)[:, 1]
+            y_pred = (y_probs > st.session_state['threshold']).astype(int)
+            acc = accuracy_score(y_test, y_pred)
+            f1 = f1_score(y_test, y_pred)
+            cm = confusion_matrix(y_test, y_pred)
 
-        st.metric("Model Accuracy", f"{acc:.2f}")
-        st.metric("F1-score (Churn)", f"{f1:.2f}")
+            col1, col2 = st.columns(2)
+            with col1:
+                st.metric("Model Accuracy", f"{acc:.2f}")
+            with col2:
+                st.metric("F1-score (Churn)", f"{f1:.2f}")
 
-        # Confusion Matrix
-        with st.expander("🧮 Confusion Matrix"):
-            fig, ax = plt.subplots()
-            sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=["Not Churn","Churn"], yticklabels=["Not Churn","Churn"], ax=ax)
-            ax.set_xlabel("Predicted")
-            ax.set_ylabel("Actual")
-            st.pyplot(fig)
+            # Confusion Matrix
+            with st.expander("🧮 Confusion Matrix"):
+                fig_cm, ax_cm = plt.subplots(figsize=(6,4))
+                sns.heatmap(cm, annot=True, fmt="d", cmap="Blues",
+                            xticklabels=["Not Churn", "Churn"], yticklabels=["Not Churn", "Churn"], ax=ax_cm)
+                ax_cm.set_xlabel("Predicted")
+                ax_cm.set_ylabel("Actual")
+                plt.tight_layout()
+                st.pyplot(fig_cm, use_container_width=True)
+                plt.close(fig_cm)
 
-        # Feature Importance
-        with st.expander("🔎 Top 10 Feature Importance"):
-            importance = pd.Series(model.feature_importances_, index=X.columns)
-            fig, ax = plt.subplots()
-            importance.nlargest(10).plot(kind='barh', ax=ax, color="#1f77b4")
-            ax.set_title("Top 10 Important Features")
-            st.pyplot(fig)
+            # Feature Importance
+            with st.expander("🔎 Top 10 Feature Importance"):
+                importance = pd.Series(model.feature_importances_, index=X.columns)
+                fig_imp, ax_imp = plt.subplots(figsize=(6,4))
+                importance.nlargest(10).plot(kind='barh', ax=ax_imp, color="#1f77b4")
+                ax_imp.set_title("Top 10 Important Features")
+                plt.tight_layout()
+                st.pyplot(fig_imp, use_container_width=True)
+                plt.close(fig_imp)
 
-    # ---------------------------
     # ---------------------------
     # Predict Churn Section
-   elif option == "Predict Churn":
-    st.subheader("📌 Predict Churn for a New Customer")
+    # ---------------------------
+    elif selected == "Predict Churn":
+        st.subheader("📌 Predict Churn for a New Customer")
 
-    # Check if model and X exist
-    if "model" not in st.session_state or "X_columns" not in st.session_state:
-        st.warning("⚠️ Please train the model first in 'Model Training' section.")
-    else:
-        # Important columns only
-        gender = st.selectbox("Gender", ["Male", "Female"])
-        senior_citizen = st.selectbox("Senior Citizen", ["Yes", "No"])
-        partner = st.selectbox("Partner", ["Yes", "No"])
-        dependents = st.selectbox("Dependents", ["Yes", "No"])
-        tenure = st.slider("Tenure (Months)", 0, 72, 12)
-        contract = st.selectbox("Contract", ["Month-to-month", "One year", "Two year"])
-        monthly_charges = st.number_input("Monthly Charges", min_value=0, max_value=200, value=50)
-        total_charges = st.number_input("Total Charges", min_value=0, max_value=10000, value=1000)
+        # Ensure model & columns exist
+        if "model" not in st.session_state or "X_columns" not in st.session_state:
+            st.warning("⚠️ Please train the model first in 'Model Training' section.")
+        else:
+            model = st.session_state["model"]
+            X_columns = st.session_state["X_columns"]
 
-        # Collect inputs
-        new_data = {
-            "gender": gender,
-            "SeniorCitizen": 1 if senior_citizen == "Yes" else 0,
-            "Partner": 1 if partner == "Yes" else 0,
-            "Dependents": 1 if dependents == "Yes" else 0,
-            "tenure": tenure,
-            "Contract": contract,
-            "MonthlyCharges": monthly_charges,
-            "TotalCharges": total_charges
-        }
-        new_df = pd.DataFrame([new_data])
+            # Determine top features to ask user for
+            importance = pd.Series(model.feature_importances_, index=X_columns)
+            top_features = importance.nlargest(8).index.tolist()
 
-        # Encode categorical values
-        new_df_encoded = pd.get_dummies(new_df, drop_first=True)
+            st.markdown("Fill key customer details (only most important features shown):")
 
-        # Align with training columns
-        new_df_encoded = new_df_encoded.reindex(columns=st.session_state["X_columns"], fill_value=0)
+            # Build form in 2 columns
+            user_input = {}
+            with st.form("predict_form"):
+                cols = st.columns(2)
+                for i, col in enumerate(top_features):
+                    # If encoded binary-like column (has an underscore), show friendly label
+                    if "_" in col:
+                        base, val = col.split("_", 1)
+                        label = f"{base} = {val}"
+                        with cols[i % 2]:
+                            choice = st.selectbox(label, ["No", "Yes"], key=f"{col}_key")
+                            user_input[col] = 1 if choice == "Yes" else 0
+                    else:
+                        # numeric column
+                        # use df_encoded stats to set slider range
+                        col_min = float(df_encoded[col].min()) if col in df_encoded.columns else 0.0
+                        col_max = float(df_encoded[col].max()) if col in df_encoded.columns else 1.0
+                        col_mean = float(df_encoded[col].mean()) if col in df_encoded.columns else (col_min + col_max) / 2.0
+                        with cols[i % 2]:
+                            user_input[col] = st.slider(col, col_min, col_max, col_mean, key=f"{col}_key")
 
-        # Predict
-        model = st.session_state["model"]
-        prediction = model.predict(new_df_encoded)[0]
+                submitted = st.form_submit_button("Predict Churn")
 
-        st.success("✅ Prediction complete!")
-        st.write("**Churn Prediction:**", "Yes" if prediction == 1 else "No")
+            if submitted:
+                # Create full feature vector with zeros and then set provided top features
+                user_row = pd.DataFrame(columns=X_columns)
+                user_row.loc[0] = 0  # default 0
 
+                for c, v in user_input.items():
+                    if c in user_row.columns:
+                        user_row.at[0, c] = v
+
+                # Ensure column order matches training
+                user_row = user_row.reindex(columns=X_columns, fill_value=0)
+
+                # Predict
+                prob = model.predict_proba(user_row)[:, 1][0]
+                pred = "⚠️ Churn" if prob > st.session_state.get('threshold', 0.5) else "✅ Not Churn"
+
+                st.markdown(f"""
+                    <div style='padding:20px; border-radius:16px; background-color:#f0f8ff; text-align:center; box-shadow: 0px 6px 15px rgba(0,0,0,0.1);'>
+                        <h3>Prediction: {pred}</h3>
+                        <p>Churn Probability: <b>{prob:.2f}</b></p>
+                    </div>
+                """, unsafe_allow_html=True)
+
+else:
+    st.info("Upload a Telco churn CSV to get started.")

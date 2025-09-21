@@ -37,6 +37,13 @@ st.markdown("""
         color: white;
     }
 
+    /* Sidebar selectbox text color */
+    .stSidebar select {
+        background-color: #1e293b !important;
+        color: #facc15 !important;
+        font-weight: bold !important;
+    }
+
     /* Buttons */
     button {
         background-color: #facc15 !important;
@@ -44,9 +51,18 @@ st.markdown("""
         font-weight: bold !important;
         border-radius: 8px !important;
     }
-
     </style>
 """, unsafe_allow_html=True)
+
+# =======================
+# Page Title (Centered)
+# =======================
+st.markdown(
+    """
+    <h1 style='text-align: center; color: #facc15; font-size: 48px;'>📊 Customer Churn Prediction</h1>
+    """,
+    unsafe_allow_html=True
+)
 
 # =======================
 # Load Dataset
@@ -61,7 +77,13 @@ df = load_data()
 # =======================
 # Sidebar Navigation
 # =======================
-st.sidebar.title("📊 Customer Churn Prediction")
+st.sidebar.markdown(
+    """
+    <h2 style='color:#facc15;'>Navigation</h2>
+    """,
+    unsafe_allow_html=True
+)
+
 option = st.sidebar.selectbox(
     "Choose an option",
     ["Dashboard", "Model Training", "Predict Churn"]
@@ -177,5 +199,3 @@ elif option == "Predict Churn":
         st.subheader("📢 Prediction Result")
         st.markdown(f"<h3>Churn Prediction: <span style='color:gold'>{prediction}</span></h3>", unsafe_allow_html=True)
         st.write(f"**Probability of Churn:** {prob:.2f}")
-
-

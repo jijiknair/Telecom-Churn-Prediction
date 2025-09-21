@@ -166,7 +166,7 @@ if option == "Dashboard":
     .customers { background-color: #2ecc71; }  
     .churned { background-color: #e74c3c; }    
     .rate { background-color: #f39c12; }       
-    .monthly { background-color: #3498db; }    
+   
     </style>
     """, unsafe_allow_html=True)
 
@@ -247,9 +247,6 @@ elif option == "Model Training":
     model.fit(X_train, y_train)
 
     y_pred = model.predict(X_test)
-
-    st.subheader("📊 Classification Report")
-    st.text(classification_report(y_test, y_pred))
 
     st.subheader("📌 Confusion Matrix")
     cm = confusion_matrix(y_test, y_pred)

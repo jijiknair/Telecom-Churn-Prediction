@@ -127,7 +127,6 @@ if option == "Dashboard":
     total_customers = df.shape[0]
     total_churned = df[df['Churn'] == 'Yes'].shape[0]
     churn_rate = total_churned / total_customers * 100
-    avg_monthly = df['MonthlyCharges'].mean()
 
     # Inject CSS for KPI styling      
     st.markdown("""
@@ -185,10 +184,7 @@ if option == "Dashboard":
             <h3>Churn Rate</h3>
             <p>{churn_rate:.2f}%</p>
         </div>
-        <div class="kpi-card monthly">
-            <h3>Avg Monthly Charges</h3>
-            <p>${avg_monthly:.2f}</p>
-        </div>
+        
     </div>
     """, unsafe_allow_html=True)
 

@@ -31,6 +31,30 @@ st.markdown("""
         color: #facc15; /* gold */
     }
 
+    st.markdown("""
+    <style>
+    /* Sidebar selectbox placeholder text color */
+    div[data-baseweb="select"] > div > div > div > span {
+        color: #facc15 !important;  /* Gold color */
+        font-weight: bold;
+    }
+    </style>
+ """, unsafe_allow_html=True)
+
+option = st.sidebar.selectbox(
+    "Choose an option",
+    ["Dashboard", "Model Training", "Predict Churn"]
+)
+
+st.markdown("""
+<style>
+    .stSelectbox label, .stNumberInput label {
+        color: #FF5733;  /* Change this to your desired color */
+        font-weight: bold; /* Optional: make it bold */
+    }
+</style>
+""", unsafe_allow_html=True)
+
     /* Sidebar */
     section[data-testid="stSidebar"] {
         background: #111827;
@@ -119,13 +143,22 @@ if option == "Dashboard":
         sns.countplot(x='InternetService', data=df, palette="rocket", ax=ax)
         st.pyplot(fig)
 
-    # Chart 4
+    # Shorten x-axis labels
+short_labels = {
+    'Electronic check': 'E-Check',
+    'Mailed check': 'M-Check',
+    'Bank transfer (automatic)': 'Bank Transfer',
+    'Credit card (automatic)': 'Credit Card'
+}
+    
+  
+# Chart 4
     with col4:
-        st.subheader("Payment Method")
-        fig, ax = plt.subplots(figsize=(5, 4))
-        sns.countplot(x='PaymentMethod', data=df, palette="coolwarm", ax=ax)
-        plt.xticks(rotation=45)
-        st.pyplot(fig)
+         st.subheader("Payment Method")
+         fig, ax = plt.subplots(figsize=(5, 4))
+         sns.countplot(x=df['PaymentMethod'].map(short_labels), palette="coolwarm", ax=ax)
+         plt.xticks(rotation=45)
+         st.pyplot(fig)
 
 # =======================
 # Model Training Section

@@ -11,82 +11,54 @@ from xgboost import XGBClassifier
 # Custom CSS for Styling
 # =======================
 st.markdown("""
-    <style>
-    /* Background Gradient */
-    .stApp {
-        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-        color: white;
-    }
-
-    /* Card Style */
-    .stMarkdown, .stDataFrame, .stSelectbox, .stNumberInput, .stButton {
-        background-color: #1e293b !important;
-        color: white !important;
-        border-radius: 12px;
-        padding: 10px;
-    }
-
-    /* Titles */
-    h1, h2, h3, h4 {
-        color: #facc15; /* gold */
-    }
-
-    st.markdown("""
-    <style>
-    /* Sidebar selectbox placeholder text color */
-    div[data-baseweb="select"] > div > div > div > span {
-        color: #facc15 !important;  /* Gold color */
-        font-weight: bold;
-    }
-    </style>
- """, unsafe_allow_html=True)
-
-option = st.sidebar.selectbox(
-    "Choose an option",
-    ["Dashboard", "Model Training", "Predict Churn"]
-)
-
-st.markdown("""
 <style>
-    .stSelectbox label, .stNumberInput label {
-        color: #FF5733;  /* Change this to your desired color */
-        font-weight: bold; /* Optional: make it bold */
-    }
+/* Background Gradient */
+.stApp {
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: white;
+}
+
+/* Card Style */
+.stMarkdown, .stDataFrame, .stSelectbox, .stNumberInput, .stButton {
+    background-color: #1e293b !important;
+    color: white !important;
+    border-radius: 12px;
+    padding: 10px;
+}
+
+/* Titles */
+h1, h2, h3, h4 {
+    color: #facc15;
+}
+
+/* Sidebar */
+section[data-testid="stSidebar"] {
+    background: #111827;
+    color: white;
+}
+
+/* Sidebar selectbox placeholder text */
+div[data-baseweb="select"] > div > div > div > span {
+    color: #facc15 !important;
+    font-weight: bold;
+}
+
+/* Buttons */
+button {
+    background-color: #facc15 !important;
+    color: black !important;
+    font-weight: bold !important;
+    border-radius: 8px !important;
+}
+
+/* Labels */
+.stSelectbox label, .stNumberInput label {
+    color: #FF5733 !important;
+    font-weight: bold !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
-    /* Sidebar */
-    section[data-testid="stSidebar"] {
-        background: #111827;
-        color: white;
-    }
-
-    /* Sidebar selectbox text color */
-    .stSidebar select {
-        background-color: #1e293b !important;
-        color: #facc15 !important;
-        font-weight: bold !important;
-    }
-
-    /* Buttons */
-    button {
-        background-color: #facc15 !important;
-        color: black !important;
-        font-weight: bold !important;
-        border-radius: 8px !important;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
-# =======================
-# Page Title (Centered)
-# =======================
-st.markdown(
-    """
-    <h1 style='text-align: center; color: #facc15; font-size: 48px;'>📊 Customer Churn Prediction</h1>
-    """,
-    unsafe_allow_html=True
-)
 
 # =======================
 # Load Dataset

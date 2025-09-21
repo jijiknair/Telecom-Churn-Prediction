@@ -124,23 +124,71 @@ if option == "Dashboard":
     st.title("📈 Dashboard")
 
      # =======================
-    # KPI Cards
-    # =======================
-    total_customers = df.shape[0]
-    total_churned = df[df['Churn'] == 'Yes'].shape[0]
-    churn_rate = total_churned / total_customers * 100
-    avg_monthly = df['MonthlyCharges'].mean()
+   # =======================
+# KPI Cards with Colors
+# =======================
+total_customers = df.shape[0]
+total_churned = df[df['Churn'] == 'Yes'].shape[0]
+churn_rate = total_churned / total_customers * 100
+avg_monthly = df['MonthlyCharges'].mean()
 
-    kpi1, kpi2, kpi3, kpi4 = st.columns(4)
+# Inject CSS for KPI styling
+st.markdown("""
+    <style>
+    .kpi-card {
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        color: white;  /* text will be white */
+        box-shadow: 0px 4px 12px rgba(0,0,0,0.3);
+        margin: 5px;
+        flex: 1;
+    }
+    .kpi-container {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    .kpi-card h3 {
+        font-size: 18px;
+        margin-bottom: 5px;
+    }
+    .kpi-card p {
+        font-size: 22px;
+        font-weight: bold;
+        margin: 0;
+    }
+    .customers { background-color: #2ecc71; }   /* Green */
+    .churned { background-color: #e74c3c; }     /* Red */
+    .rate { background-color: #f39c12; }        /* Orange */
+    .monthly { background-color: #3498db; }     /* Blue */
+    </style>
+""", unsafe_allow_html=True)
 
-    kpi1.metric(label="Total Customers", value=f"{total_customers}")
-    kpi2.metric(label="Total Churned", value=f"{total_churned}")
-    kpi3.metric(label="Churn Rate", value=f"{churn_rate:.2f}%")
-    kpi4.metric(label="Avg Monthly Charges", value=f"${avg_monthly:.2f}")
+# Custom KPI layout
+st.markdown(f"""
+<div class="kpi-container">
+    <div class="kpi-card customers">
+        <h3>Total Customers</h3>
+        <p>{total_customers}</p>
+    </div>
+    <div class="kpi-card churned">
+        <h3>Total Churned</h3>
+        <p>{total_churned}</p>
+    </div>
+    <div class="kpi-card rate">
+        <h3>Churn Rate</h3>
+        <p>{churn_rate:.2f}%</p>
+    </div>
+    <div class="kpi-card monthly">
+        <h3>Avg Monthly Charges</h3>
+        <p>${avg_monthly:.2f}</p>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
-    st.markdown("---")  # horizontal separator
-
-
+st.markdown("---")
 
    
     col1, col2 = st.columns(2)

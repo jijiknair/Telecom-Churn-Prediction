@@ -172,7 +172,7 @@ elif option == "Predict Churn":
     monthly_charges = st.number_input("Monthly Charges", min_value=0, value=50)
     total_charges = st.number_input("Total Charges", min_value=0, value=500)
     contract = st.selectbox("Contract Type", ["Month-to-month", "One year", "Two year"])
-    payment = st.selectbox("Payment Method", ["Electronic check", "Mailed check", "Bank transfer (automatic)", "Credit card (automatic)"])
+    payment = st.selectbox("Payment Method", ["Echeck", "M check", "BT (auto)", "CC(auto)"])
     internet = st.selectbox("Internet Service", ["DSL", "Fiber optic", "No"])
 
     if st.button("Predict Churn"):

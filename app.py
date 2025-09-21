@@ -255,9 +255,7 @@ elif option == "Model Training":
     
     st.pyplot(fig, use_container_width=True)  # auto-fit to container width
 
-    st.subheader("📊 Classification Report")
-    st.text(classification_report(y_test, y_pred))
-
+   
     joblib.dump(model, "churn_model.pkl")
     st.success("✅ Model trained and saved successfully!")
 

@@ -46,11 +46,11 @@ Gradient background, styled KPI cards, dark theme
 
 3.Confusion Matrix
 
-![Prediction Result](screenshots/3.Confusion_Matrix.png)
+![Prediction Result](screenshots/3.ConfusionMatrix.png)
 
 4.Prediction Form
 
-![Prediction Form](screenshots/4.Customer_Churn_Prediction.png)
+![Prediction Form](screenshots/4.CustomerChurnPrediction.png)
 
 
 

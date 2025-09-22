@@ -1,7 +1,9 @@
 📊 Customer Churn Prediction App
+
 A Streamlit web application for predicting telecom customer churn using the Telco Customer Churn dataset. The app provides an interactive dashboard, machine learning model training, and real-time prediction for new customers.
 
 🚀 Features
+
 Interactive Dashboard
 KPIs: Total Customers, Total Churned, Churn Rate
 Charts: Churn Distribution, Contract Types, Internet Service, Payment Methods
@@ -14,16 +16,21 @@ Input customer details (tenure, contract, charges, etc.)
 Get prediction result (Yes/No) with probability score
 Modern UI
 Gradient background, styled KPI cards, dark theme
+
 📂 Project Files
+
 ├── app.py # Main Streamlit app 
 ├── Telco-Customer-Churn.csv # Dataset 
 ├── churn_model.pkl # Trained model (generated after training) 
 ├── README.md # Project documentation
 
+
 ⚙️ Installation
+
 1. Clone the repository
 2. Install dependencies
 3. Run app.py
+
 
 📸 Screenshots
 
@@ -33,8 +40,9 @@ Gradient background, styled KPI cards, dark theme
 
 
 2. Charts
-3. 
+
 ![Churn Distribution](screenshots/2.charts.png)
+
 
 3.Prediction Result
 
@@ -43,6 +51,8 @@ Gradient background, styled KPI cards, dark theme
 4.Prediction Form
 
 ![Prediction Form](screenshots/4.Customer Churn Prediction.png)
+
+
 
 📜 License
 

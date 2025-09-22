@@ -27,16 +27,21 @@ Gradient background, styled KPI cards, dark theme
 
 📸 Screenshots
 
-Dashboard with KPIs
+1. Dashboard with KPIs
+
 ![Dashboard](screenshots/1.KPI.png)
 
-Charts
+
+2. Charts
+3. 
 ![Churn Distribution](screenshots/2.charts.png)
 
-Prediction Result
+3.Prediction Result
+
 ![Prediction Result](screenshots/3.Confusion Matrix.png)
 
-Prediction Form
+4.Prediction Form
+
 ![Prediction Form](screenshots/4.Customer Churn Prediction.png)
 
 📜 License
